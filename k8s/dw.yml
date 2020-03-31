@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: dw
+  name: dw-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dw
+  template:
+    metadata:
+      labels:
+        app: dw
+    spec:
+      containers:
+        - name: dw
+          image: <YOUR_DOCKERHUB_ACCOUNT>/web-dw:1.0
+          ports:
+            - name: web
+              containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dw
+  namespace: default
+spec:
+  selector:
+    app: dw
+  ports:
+    - protocol: TCP
+      port: 8080
+      name: web
+      targetPort: 8080
+  type: NodePort

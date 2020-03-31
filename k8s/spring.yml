@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: spring
+  name: spring-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring
+  template:
+    metadata:
+      labels:
+        app: spring
+    spec:
+      containers:
+        - name: spring
+          image: <YOUR_DOCKERHUB_ACCOUNT>/web-spring:1.0
+          ports:
+            - name: web
+              containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: spring
+  namespace: default
+spec:
+  selector:
+    app: spring
+  ports:
+    - protocol: TCP
+      port: 8080
+      name: web
+      targetPort: 8080
+  type: NodePort

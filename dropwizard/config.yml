@@ -1,0 +1,11 @@
+template: Hello, %s!
+
+server:
+  requestLog:
+    appenders: []
+
+logging:
+  level: INFO
+  loggers:
+      io.dropwizard: WARN
+      de.test: INFO

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>jwt-spring-boot</artifactId>
+    <artifactId>spring-boot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 	<name>demo</name>
 	<description>JWT Creator with Spring Boot</description>
@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
         <spring-boot.version>2.6.4</spring-boot.version>
+        <java-jwt.version>3.19.0</java-jwt.version>
     </properties>
 
 	<dependencies>
@@ -40,7 +41,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>3.18.3</version>
+            <version>${java-jwt.version}</version>
         </dependency>
     </dependencies>
 

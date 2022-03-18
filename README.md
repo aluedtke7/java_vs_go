@@ -7,7 +7,7 @@ The Java frameworks dropwizard and spring-boot use the `openjdk:11-jre-slim-bust
 
 Quarkus is using `ubi8/ubi-minimal:8.1` from RedHat.
 
-The Go implementation uses go 1.14 as compiler and use the `scratch` base image which is an empty image.
+The Go implementation uses go 1.18 as compiler and use the `scratch` base image which is an empty image.
 
 ## create artifacts
 There is a `build-all.sh` script file in the root of the project that compiles the source code and creates the docker images for each framework and for go. Please use your
@@ -16,29 +16,40 @@ the quarkus native image with the internal minikube docker deamon, you needs lot
 docker hub as registry, 4GB of RAM for minikube is enough.
 
 If you want to run them separate, you can proceed as follows:
-#### dropwizard
+#### Dropwizard
     cd dropwizard
     mvn clean package
     docker build -t web-dropwizard:1.0 .
     docker run --rm -i -p 8080:8080 web-dropwizard:1.0
 
-#### quarkus Java
+#### Quarkus Java JVM
     cd ../quarkus
     ./mvnw clean package
     docker build -f src/main/docker/Dockerfile.jvm -t web-quarkus-jvm:1.0 .
     docker run --rm -i -p 8080:8080 web-quarkus-jvm:1.0
 
-#### quarkus native
+#### Quarkus Java native
     docker build -f src/main/docker/Dockerfile.multistage -t web-quarkus-native:1.0 .
     docker run --rm -i -p 8080:8080 web-quarkus-native:1.0
 
-#### spring boot
+#### Quarkus Kotlin JVM
+    cd ../quarkus-kotlin
+    ./mvnw clean package
+    docker build -f src/main/docker/Dockerfile.jvm -t web-quarkus-kotlin-jvm:1.0 .
+    docker run --rm -i -p 8080:8080 web-quarkus-kotlin-jvm:1.0
+
+#### Quarkus Kotlin native
+    ./mvnw package -Pnative -Dquarkus.native.container-build=true
+    docker build -f src/main/docker/Dockerfile.native -t web-quarkus-kotlin-native:1.0 .
+    docker run --rm -i -p 8080:8080 web-quarkus-kotlin-native:1.0
+
+#### Spring Boot
     cd ../spring-boot
     mvn clean package
     docker build -t web-spring-boot:1.0 .
     docker run --rm -i -p 8080:8080 web-spring-boot:1.0
 
-#### go
+#### GO
     cd ../go
     GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -o web-go main.go
     docker build -t web-go:1.0 .
@@ -68,6 +79,49 @@ Quarkus native
 
 Spring
 ![spring](screenshots/spring-2.png)
+
+## New tests including Kotlin
+These tests are run native via Java or as binary executable
+
+Run the Apache Benchmark tool in a separate shell
+
+    ab -n 30000 -c 64 -p ./post.data -T application/json http://localhost:8080/login
+    ab -n 100000 -c 64 -p ./post.data -T application/json http://localhost:8080/login
+
+Compile artifacts and run server.
+
+### Dropwizard
+    cd dropwizard
+    mvn clean package
+    java -jar target/dropwizard-1.0-SNAPSHOT.jar server config.yml
+
+### Quarkus Java JVM
+    cd ../quarkus
+    mvn clean package
+    java -jar target/quarkus-app/quarkus-run.jar
+
+### Quarkus Java native
+    mvn package -Pnative -Dquarkus.native.container-build=true
+    target/quarkus-java-1.0.0-SNAPSHOT-runner
+
+### Quarkus Kotlin JVM
+    cd ../quarkus-kotlin
+    mvn clean package
+    java -jar target/quarkus-app/quarkus-run.jar
+
+### Quarkus Kotlin native
+    mvn package -Pnative -Dquarkus.native.container-build=true
+    target/quarkus-kotlin-1.0-SNAPSHOT-runner
+
+### Spring Boot
+    cd ../spring-boot
+    mvn clean package
+    java -jar target/spring-boot-0.0.1-SNAPSHOT.jar
+
+### GO
+    cd ../go
+    GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -o web-go main.go
+    ./web-go
 
 ## Results
 The requests per second were measured using plain docker. The image size is what docker tells you

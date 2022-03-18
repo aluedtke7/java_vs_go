@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
-	"github.com/urfave/negroni"
+	"github.com/urfave/negroni/v2"
 )
 
 const defaultPort = "8080"

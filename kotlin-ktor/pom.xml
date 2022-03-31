@@ -91,7 +91,7 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin_version}</version>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>11</jvmTarget>
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>

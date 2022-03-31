@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-        <spring-boot.version>2.6.5</spring-boot.version>
+        <spring-boot.version>2.6.6</spring-boot.version>
         <java-jwt.version>3.19.0</java-jwt.version>
     </properties>
 

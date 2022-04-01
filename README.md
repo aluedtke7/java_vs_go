@@ -1,7 +1,25 @@
 # Comparison of Java Web frameworks with Go
 ## Abstract
+This project should show the differences between various Java
+Web frameworks and Go. The project implements a little Rest API
+with a POST endpoint to get a JWT for authentication purposes. This
+is really a very simple example, but it's enough to demonstrate the 
+differences between them. 
 
-### Language and image versions used
+I was also eager to know, if Java compiled to native
+executables is any better than letting the JVM doing it's work.
+
+My interest was mainly, if Go is much better than Java ;-).
+The aspects are
+
+* requests per second handled
+* memory consumption
+* threads used
+* Docker image size
+* differences between the Java frameworks
+* comparison between JVM and native compilation (Quarkus)
+
+### Versions of Language and Docker base image used
 All Java frameworks and the Kotlin/Ktor project use Java 11 as compiler.
 The Docker images are mostly build with the `openjdk:11-jre-slim-buster` base image.
 
@@ -10,7 +28,9 @@ Quarkus is using `registry.access.redhat.com/ubi8/openjdk-11` for the JVM versio
 
 The Go implementation uses go 1.18 as compiler and use the `scratch` base image which is an empty image.
 
-## create artifacts
+All frameworks used the latest available stable version (march 31, 2022).
+
+## Create artifacts
 There is a `build-all-images.sh` script file in the root of the project that compiles the source code 
 and creates the docker images for each framework and for go. The quarkus native image
 build uses the GraalVM docker image and that needs a lot of RAM, so you might see out of memory
@@ -143,16 +163,16 @@ Only one benchmark was running when the measurements took place.
 
 The image size is what docker tells you when you execute `docker image ls`.
 
-| framework / language | requests per s | RAM usage peak (MB) | threads | image size MB | remarks |
+| framework / language | requests per second | RAM usage peak in MB | threads | image size in MB | remarks |
 | --------------------- | ------: | ---: | --: | -----: | :----- |
-| dropwizard            |  69.633 | 1300 | 465 | 239.00 | |
-| quarkus Java jvm      | 113.841 | 1400 | 265 | 451.00 | |
-| quarkus Java native   |  44.245 |  569 | 236 | 148.00 | 80% CPU |
-| quarkus Kotlin jvm    | 112.176 | 1200 | 265 | 457.00 | |
-| quarkus Kotlin native |  44.289 |  555 | 236 | 148.00 | 82% CPU |
+| Dropwizard            |  69.633 | 1300 | 465 | 239.00 | |
+| Quarkus Java jvm      | 113.841 | 1400 | 265 | 451.00 | |
+| Quarkus Java native   |  44.245 |  569 | 236 | 148.00 | 80% CPU |
+| Quarkus Kotlin jvm    | 112.176 | 1200 | 265 | 457.00 | |
+| Quarkus Kotlin native |  44.289 |  555 | 236 | 148.00 | 82% CPU |
 | Kotlin Ktor jvm       | 109.619 | 1100 |  59 | 238.00 | |
-| spring boot           |  81.617 |  904 | 241 | 238.00 | 95% CPU |
-| go                    | 106.055 |   33 |  29 |   7.35 | 96% CPU |
+| Spring boot           |  81.617 |  904 | 241 | 238.00 | 95% CPU |
+| Go                    | 106.055 |   33 |  29 |   7.35 | 96% CPU |
 
 All tests were done on a Lenovo Thinkpad T14s gen1 with AMD Ryzen 7 pro 4750u
 and 32GB of RAM running Manjaro Linux 64Bit.
@@ -173,11 +193,21 @@ Spring Boot which are all around 240MB. These use the openjdk:11-jre-slim-buster
 base image. The images of the native compiled Quarkus versions are 90MB smaller.
 The Go image is only using 1/20th of the next best Java solution.
 
+All Java frameworks use more than 200 threads to get the work done. Dropwizard
+spawns even more threads, but this did not result in better performance. Ktor
+use approx. 60 threads and has very good performance. Go use even less threads (30)
+and has also a very good performance.
+
 The requests per second (r/s)is for the Java JVM solutions around 110.000 r/s with a 
 light disadvantage for Kotlin Ktor. Next in speed is GO with 106.000 r/s.
 With a gap of 25.000 r/s comes Spring Boot next. Another 12.000 r/s slower is 
 Dropwizard. The slowest solutions are the native compiled ones. They can only
 handle 40% of the fastest solution.
+
+The comparison of JVM and native mode shows, that it's only possible to have either
+speed (JVM) or low memory consumption (native). My conclusion is to use the native mode if you
+have memory constraints in your environment. But if this is very important, you
+should consider to move your code base to Go.
 
 The overall best performance regarding speed, memory usage and image size delivers
 the GO solution. It's not the fastest, but the amount of RAM needed outperformes all

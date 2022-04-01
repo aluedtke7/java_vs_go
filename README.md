@@ -36,10 +36,11 @@ and creates the docker images for each framework and for go. The quarkus native 
 build uses the GraalVM docker image and that needs a lot of RAM, so you might see out of memory
 errors while building depending on your environment.
 
-After running the script, you can either run the benchmark against the Docker container or against the
-artifacts.
+After running the script, you can either run the benchmark against the Docker container or directly against the
+artifacts. The benchmark below use the latter one.
 
 If you want to run them separate, you can proceed as follows:
+
 #### Dropwizard
     cd dropwizard
     mvn clean package
@@ -86,14 +87,14 @@ If you want to run them separate, you can proceed as follows:
     docker run --rm -i -p 8080:8080 web-go:1.0
 
 ## Benchmarks
-I was using apache benchmark (ab) for a while, but since I have a new notebook with a powerful CPU,
+I was using apache benchmark (`ab`) for a while, but since I have a new notebook with a powerful CPU,
 I realized, that ab does not bring my machine to the limit. The CPU usage while running the
 benchmark was around 40%. That's why I moved to [wrk](https://github.com/wg/wrk). The data file
-for the POST request is still there, so you can run ab benchmarks as well.
+for the `ab` POST request is still there, so you can run `ab` benchmarks as well.
 
 The wrk benchmark results are in a table down below.
 
-### apache benchmark (deprecated)
+### Apache benchmark (deprecated)
 For each framework and for go, start the program as described and start the benchmark like this:
 
     # either run it via java -jar
@@ -107,16 +108,16 @@ For each framework and for go, start the program as described and start the benc
     ab -n 100000 -c 64 -p ./post.data -T application/json http://localhost:8080/login
 
 ### wrk benchmark
-With this release (march 2022), I'm using wrk for benchmarking. These tests are running
-native via Java or as binary executable. 
+With this release (march 2022), I'm using wrk version 4.2.0 for benchmarking. These tests 
+are running against Java (java -jar xxx.jar) or against binary executables. 
 
 Three terminal windows (shell) are being used:
 
-- The web app is started in terminal 1
-- The wrk benchmark is started in terminal 2
-  `wrk -spost.lua -t12 -c400 -d10s http://127.0.0.1:8080/login` # warm-up
-  `wrk -spost.lua -t12 -c400 -d60s http://127.0.0.1:8080/login` # benchmark
-- In terminal 3, btop is used to determine the amount of RAM being used by the web app 
+* The web app is started in terminal 1
+* The wrk benchmark is started in terminal 2
+  * `wrk -spost.lua -t12 -c400 -d10s http://127.0.0.1:8080/login` # warm-up
+  * `wrk -spost.lua -t12 -c400 -d60s http://127.0.0.1:8080/login` # benchmark
+* In terminal 3, btop is used to determine the amount of RAM being used by the web app 
 
 #### Dropwizard
     cd dropwizard

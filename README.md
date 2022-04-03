@@ -164,6 +164,8 @@ Only one benchmark was running when the measurements took place.
 
 The image size is what docker tells you when you execute `docker image ls`.
 
+#### Lenovo Thinkpad T14s gen1 AMD Ryzen 7 pro 4750u, 32GB RAM, Manjaro Linux 64Bit
+
 | framework / language | requests per second | RAM usage peak in MB | threads | image size in MB | remarks |
 | --------------------- | ------: | ---: | --: | -----: | :----- |
 | Dropwizard            |  69.633 | 1300 | 465 | 239.00 | |
@@ -175,8 +177,19 @@ The image size is what docker tells you when you execute `docker image ls`.
 | Spring boot           |  81.617 |  904 | 241 | 238.00 | 95% CPU |
 | Go                    | 106.055 |   33 |  29 |   7.35 | 96% CPU |
 
-All tests were done on a Lenovo Thinkpad T14s gen1 with AMD Ryzen 7 pro 4750u
-and 32GB of RAM running Manjaro Linux 64Bit.
+#### HP EliteBook 8470p Intel i7 3540M, 16GB RAM, Arch Linux 64Bit
+
+| framework / language | requests per second | RAM usage peak in MB | threads | remarks |
+| --------------------- | ------: | ---: | --: | :----- |
+| Dropwizard            |  16.918 |  463 |  88 | |
+| Quarkus Java jvm      |  24.396 |  361 |  78 | |
+| Quarkus Java native   |  15.124 |  371 |  60 | |
+| Quarkus Kotlin jvm    |  23.836 |  346 |  78 | |
+| Quarkus Kotlin native |  15.133 |  369 |  45 | |
+| Kotlin Ktor jvm       |  26.992 |  369 |  30 | |
+| Spring boot           |  21.937 |  440 |  80 | |
+| Go                    |  38.054 |   11 |  16 | |
+
 
 ## Conclusion
 The CPU usage is about 20% less for the native compiled Quarkus binaries. 

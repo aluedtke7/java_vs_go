@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Path("/login")
 public class LoginResource {
-    private Algorithm algorithm = Algorithm.HMAC256("secret");
+    private final Algorithm algorithm = Algorithm.HMAC256("secret");
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

@@ -9,12 +9,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>dw</name>
+    <name>dropwizard</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <dropwizard.version>2.0.28</dropwizard.version>
+        <dropwizard.version>2.1.7</dropwizard.version>
+        <java-jwt.version>4.4.0</java-jwt.version>
         <mainClass>de.test.dwApplication</mainClass>
     </properties>
 
@@ -39,7 +40,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>3.19.0</version>
+            <version>${java-jwt.version}</version>
         </dependency>
     </dependencies>
 
@@ -97,8 +98,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -106,9 +107,9 @@
 
     <profiles>
         <profile>
-            <id>java11+</id>
+            <id>java17+</id>
             <activation>
-                <jdk>[11,)</jdk>
+                <jdk>[17,)</jdk>
             </activation>
             <properties>
                 <!--

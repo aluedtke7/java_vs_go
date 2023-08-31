@@ -23,15 +23,16 @@ The aspects are
 
 ### Versions of Language and Docker base image used
 
-All Java frameworks and the Kotlin/Ktor project use Java 11 as compiler.
+All Java frameworks and the Kotlin/Ktor project use Java 17 (old results compiled with Java 11).
 The Docker images are mostly build with the `openjdk:11-jre-slim-buster` base image.
 
 Quarkus is using `registry.access.redhat.com/ubi8/openjdk-11` for the JVM version and
 `registry.access.redhat.com/ubi8/ubi-minimal:8.5` for the native version.
 
-The Go implementation uses go 1.18 as compiler and use the `scratch` base image which is an empty image.
+The Go implementation uses go 1.20 (old results compiled with 1.18) as compiler and use the `scratch` 
+base image which is an empty image.
 
-All frameworks used the latest available stable version (march 31, 2022).
+All frameworks used the latest available stable version (august 2023, old results from march 2022).
 
 ## Create artifacts
 
@@ -54,7 +55,7 @@ If you want to run them separate, you can proceed as follows:
 
 #### Quarkus Java JVM
 
-    cd ../quarkus
+    cd ../quarkus-java
     ./mvnw clean package
     docker build -f src/main/docker/Dockerfile.jvm -t web-quarkus-jvm:1.0 .
     docker run --rm -i -p 8080:8080 web-quarkus-jvm:1.0
@@ -132,7 +133,7 @@ Three terminal windows (shell) are being used:
 - The wrk benchmark is started in terminal 2
   - `wrk -spost.lua -t8 -c50 -d30s http://127.0.0.1:8080/login` # warm-up
   - `wrk -spost.lua -t8 -c50 -d60s http://127.0.0.1:8080/login` # benchmark 3 times
-- In terminal 3, btop is used to determine the amount of RAM being used by the web app
+- In terminal 3, btop is used to determine the amount of RAM being used and the number of threads spawned by the web app
 
 #### Dropwizard
 
@@ -177,18 +178,33 @@ Three terminal windows (shell) are being used:
 #### GO
 
     cd ../go
-    GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -o web-go main.go
+    CGO_ENABLED=0 go build -o web-go main.go
     ./web-go
 
 ### Results
 
 The requests per second were measured with wrk (average of 3 runs each of 60 seconds).
-The RAM usage was measured with btop.
+The RAM usage and the number of threads was measured with btop.
 Only one benchmark was running when the measurements took place.
 
 The image size is what docker tells you when you execute `docker image ls`.
 
-#### Lenovo Thinkpad T14s gen1 AMD Ryzen 7 pro 4750u, 32GB RAM, Manjaro Linux 64Bit
+#### current (Java 17, current frameworks)
+##### Apple MacBookPro 14" 2023 M2 Max, 64GB RAM
+
+| framework / language  | requests per second |  RAM usage peak in MB | threads | remarks   |
+| --------------------- |--------------------:|----------------------:|--------:|:----------|
+| Dropwizard            |             106.400 |                   860 |     114 | cpu 64%   |
+| Quarkus Java jvm      |             104.900 |                   590 |      90 | cpu 66%   |
+| Quarkus Java native   |                n.a. |                   --- |      -- |           |
+| Quarkus Kotlin jvm    |             105.400 |                   597 |      90 | cpu 66%   |
+| Quarkus Kotlin native |                n.a. |                   --- |      -- |           |
+| Kotlin Ktor jvm       |             115.900 |                   954 |      54 | cpu 64%   |
+| Spring boot           |              54.600 |                   717 |      88 | cpu 0-54% |
+| Go                    |             125.700 |                    24 |      22 | cpu 22%   |
+
+#### old (Java 11, older frameworks)
+##### Lenovo Thinkpad T14s gen1 AMD Ryzen 7 pro 4750u, 32GB RAM, Manjaro Linux 64Bit
 
 | framework / language  | requests per second | RAM usage peak in MB | threads | image size in MB | remarks |
 | --------------------- | ------------------: | -------------------: | ------: | ---------------: | :------ |
@@ -201,7 +217,7 @@ The image size is what docker tells you when you execute `docker image ls`.
 | Spring boot           |              81.617 |                  904 |     241 |           238.00 | 95% CPU |
 | Go                    |             106.055 |                   33 |      29 |             7.35 | 96% CPU |
 
-#### Lenovo Thinkpad T460 Intel i7 6600U, 16GB RAM, Manjaro Linux 64Bit
+##### Lenovo Thinkpad T460 Intel i7 6600U, 16GB RAM, Manjaro Linux 64Bit
 
 | framework / language  | requests per second | RAM usage peak in MB | threads | remarks |
 | --------------------- | ------------------: | -------------------: | ------: | :------ |
@@ -214,7 +230,7 @@ The image size is what docker tells you when you execute `docker image ls`.
 | Spring boot           |              26.342 |                  489 |      82 |         |
 | Go                    |              45.425 |                   11 |      19 |         |
 
-#### HP EliteBook 8470p Intel i7 3540M, 16GB RAM, Arch Linux 64Bit
+##### HP EliteBook 8470p Intel i7 3540M, 16GB RAM, Arch Linux 64Bit
 
 | framework / language  | requests per second | RAM usage peak in MB | threads | remarks |
 | --------------------- | ------------------: | -------------------: | ------: | :------ |
@@ -227,7 +243,8 @@ The image size is what docker tells you when you execute `docker image ls`.
 | Spring boot           |              21.937 |                  440 |      80 |         |
 | Go                    |              38.054 |                   11 |      16 |         |
 
-## Conclusion
+## Conclusion 
+### old results
 
 The CPU usage is about 20% less for the native compiled Quarkus binaries on the fastest
 machine. There's probably some room for improvement.
@@ -271,5 +288,12 @@ the GO solution. It's not the fastest, but very close to the best JVM solutions.
 The amount of RAM needed outperformes all Java based solutions. This and the small
 image footprint makes GO ideal for container loads.
 
-I know, this is only a simple example. If somone else has a better use case, please fork
+### current results
+Spring Boot behaves a bit funny on the MacBook: the cpu usage sways between 0% and 54% while 
+running the benchmark. There is probably a solution to cure this, but I'm not aware of.
+
+GO is the fastest and it uses only minimal memory and cpu.
+
+## final words
+I know, this is only a simple example. If someone else has a better use case, please fork
 this project and supply a merge request and I will try to add it.

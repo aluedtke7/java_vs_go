@@ -3,11 +3,14 @@ package de.test
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
+import jakarta.ws.rs.Consumes
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.MediaType
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
 
 @Path("/login")
 class LoginResource {
